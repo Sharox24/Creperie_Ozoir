@@ -3,3 +3,4 @@
 - 2023-06-24 : Update deployment scripts
 - 2023-07-29 : Fix minor typos in README
 - 2023-08-10 : Refactor React functional components
+- 2023-08-28 : Update typescript configuration
