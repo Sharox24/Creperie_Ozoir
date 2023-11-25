@@ -5,3 +5,4 @@
 - 2023-08-10 : Refactor React functional components
 - 2023-08-28 : Update typescript configuration
 - 2023-11-06 : Fix minor layout issues
+- 2023-11-25 : Update pnpm-lock.yaml
