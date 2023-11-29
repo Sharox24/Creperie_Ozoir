@@ -6,3 +6,4 @@
 - 2023-08-28 : Update typescript configuration
 - 2023-11-06 : Fix minor layout issues
 - 2023-11-25 : Update pnpm-lock.yaml
+- 2023-11-29 : Add JSDoc comments to interfaces
