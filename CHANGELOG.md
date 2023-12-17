@@ -7,3 +7,4 @@
 - 2023-11-06 : Fix minor layout issues
 - 2023-11-25 : Update pnpm-lock.yaml
 - 2023-11-29 : Add JSDoc comments to interfaces
+- 2023-12-17 : Optimize Webpack build process
