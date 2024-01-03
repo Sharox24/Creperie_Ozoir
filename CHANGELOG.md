@@ -8,3 +8,4 @@
 - 2023-11-25 : Update pnpm-lock.yaml
 - 2023-11-29 : Add JSDoc comments to interfaces
 - 2023-12-17 : Optimize Webpack build process
+- 2024-01-04 : Review and optimize logic
