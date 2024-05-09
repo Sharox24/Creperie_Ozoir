@@ -12,3 +12,4 @@
 - 2024-01-15 : Add JSDoc comments to interfaces
 - 2024-01-27 : Add JSDoc comments to interfaces
 - 2024-02-13 : Update API endpoints handling
+- 2024-05-09 : Add JSDoc comments to interfaces
