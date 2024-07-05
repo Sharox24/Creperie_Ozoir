@@ -14,3 +14,4 @@
 - 2024-02-13 : Update API endpoints handling
 - 2024-05-09 : Add JSDoc comments to interfaces
 - 2024-07-05 : Clean up directory structure
+- 2024-07-05 : Add JSDoc comments to interfaces
