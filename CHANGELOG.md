@@ -18,3 +18,4 @@
 - 2024-07-19 : Clean up directory structure
 - 2024-10-22 : Refactor React functional components
 - 2024-11-15 : Merge hotfix branch
+- 2024-11-17 : Update API endpoints handling
