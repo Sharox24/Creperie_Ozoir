@@ -21,3 +21,4 @@
 - 2024-11-17 : Update API endpoints handling
 - 2024-12-01 : Review and optimize logic
 - 2025-01-13 : Refactor React functional components
+- 2025-02-14 : Refactor state management logic
