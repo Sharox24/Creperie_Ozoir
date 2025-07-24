@@ -24,3 +24,4 @@
 - 2025-02-14 : Refactor state management logic
 - 2025-04-08 : Fix minor typos in README
 - 2025-04-28 : Merge hotfix branch
+- 2025-07-24 : Refactor core architecture
