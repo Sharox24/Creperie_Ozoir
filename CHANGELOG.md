@@ -26,3 +26,4 @@
 - 2025-04-28 : Merge hotfix branch
 - 2025-07-24 : Refactor core architecture
 - 2025-08-16 : Fix ESLint warnings across files
+- 2025-08-18 : Merge hotfix branch
