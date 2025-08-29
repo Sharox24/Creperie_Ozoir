@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;700&display=swap');
+
+:root {
+  --color-yellow: #E7D26C;
+  --color-anthracite: #595757;
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+}
+
+body {
+  background: var(--color-white);
+  color: var(--color-anthracite);
+  font-family: 'Montserrat', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Pacifico', 'Playfair Display', cursive;
+  color: var(--color-black);
+}
