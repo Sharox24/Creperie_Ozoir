@@ -4,11 +4,25 @@ import { motion } from 'framer-motion';
 import { Calendar, ArrowRight, Tag } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase, hasSupabase } from '@/lib/supabaseClient';
 
 const News = () => {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [remoteArticles, setRemoteArticles] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!hasSupabase) return;
+      const { data } = await supabase.from('actualite').select('id, title, content, image, date, lang');
+      if (data && data.length) {
+        const mapped = data.map(a => ({ id: a.id, title: a.title, excerpt: a.content?.slice(0, 160) || '', content: a.content || '', date: a.date, category: 'news', image: a.image || '', featured: false }));
+        setRemoteArticles(mapped);
+      }
+    };
+    load();
+  }, []);
 
   const handleArticleClick = (article) => {
     toast({
@@ -25,7 +39,7 @@ const News = () => {
     { id: 'news', name: 'Actualités' }
   ];
 
-  const articles = [
+  const articles = remoteArticles || [
     {
       id: 1,
       title: 'Nouvelle carte d\'automne 2024',
