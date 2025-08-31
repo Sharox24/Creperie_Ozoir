@@ -137,7 +137,7 @@ const Contact = () => {
                     </div>
 
                     <div>
-                      <label htmlFor="subject" className="block text-sm font-medium text-anthracite mb-2">{t('subject')} *</nlabel>
+                       <label htmlFor="subject" className="block text-sm font-medium text-anthracite mb-2">{t('subject')} *</label>
                       <select id="subject" name="subject" value={formData.subject} onChange={handleInputChange} required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-crepe-yellow focus:border-transparent transition-colors">
                         <option value="">Choisissez un sujet</option>
                         <option value="reservation">Réservation</option>

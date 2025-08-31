@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Clock, Facebook, Instagram } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase, hasSupabase } from '@/lib/supabaseClient';
 
 const Footer = () => {
   const { t } = useLanguage();
 
-  const openingHours = [
+  const [hours, setHours] = useState(null);
+  useEffect(() => {
+    const load = async () => {
+      if (hasSupabase) {
+        const { data } = await supabase.from('opening_hours').select('*');
+        if (data && data.length) setHours(data);
+      }
+    };
+    load();
+  }, []);
+
+  const defaultHours = [
     { day: t('tuesday'), hours: '12h00 - 14h30 / 19h00 - 22h00' },
     { day: t('wednesday'), hours: '12h00 - 14h30 / 19h00 - 22h00' },
     { day: t('thursday'), hours: '12h00 - 14h30 / 19h00 - 22h00' },
@@ -23,10 +35,8 @@ const Footer = () => {
           {/* Logo & Description */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-crepe-yellow rounded-full flex items-center justify-center">
-                <span className="text-2xl font-pacifico text-anthracite">O</span>
-              </div>
-              <span className="text-xl font-pacifico">Crêperie Ozoir</span>
+              <img src="/logo.png" onError={(e)=>{e.currentTarget.src='/logo.svg';}} alt="Crêperie Ozoir" className="h-10 w-auto" />
+              <span className="text-xl font-playfair tracking-wide">Crêperie Ozoir</span>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
               L'art de la crêpe bretonne à Ozoir-la-Ferrière. Des produits frais et locaux pour des saveurs authentiques.
@@ -70,7 +80,10 @@ const Footer = () => {
               <span className="text-lg font-semibold text-crepe-yellow">{t('openingHours')}</span>
             </div>
             <div className="space-y-2">
-              {openingHours.map((schedule, index) => (
+              {(hours && hours.length ? hours.map(h => ({
+                day: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][h.weekday] || '',
+                hours: h.ranges || t('closed')
+              })) : defaultHours).map((schedule, index) => (
                 <div key={index} className="flex justify-between text-sm">
                   <span className="text-gray-300">{schedule.day}</span>
                   <span className="text-gray-300">{schedule.hours}</span>
@@ -94,9 +107,6 @@ const Footer = () => {
               </Link>
               <Link to="/livre-or" className="block text-gray-300 hover:text-crepe-yellow transition-colors text-sm">
                 {t('guestBook')}
-              </Link>
-              <Link to="/recrutement" className="block text-gray-300 hover:text-crepe-yellow transition-colors text-sm">
-                {t('recruitment')}
               </Link>
             </div>
           </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Calendar, Users, Star, MessageSquare, Briefcase, Utensils } from 'lucide-react';
+import { Calendar, Users, Star, MessageSquare, Utensils } from 'lucide-react';
+import { supabase, hasSupabase } from '@/lib/supabaseClient';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const StatCard = ({ icon, title, value, color }) => {
@@ -23,20 +24,54 @@ const StatCard = ({ icon, title, value, color }) => {
 };
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState({
-    reservations: 0,
-    reviews: 0,
-    contacts: 0,
-    applications: 0,
-  });
+  const [stats, setStats] = useState({ reservations: 0, reviews: 0, contacts: 0, visitors: 0 });
+  const [topPages, setTopPages] = useState([]);
 
   useEffect(() => {
-    const reservations = JSON.parse(localStorage.getItem('creperie-reservations') || '[]').length;
-    const reviews = JSON.parse(localStorage.getItem('creperie-reviews') || '[]').filter(r => !r.approved).length;
-    const contacts = JSON.parse(localStorage.getItem('creperie-contacts') || '[]').length;
-    const applications = JSON.parse(localStorage.getItem('creperie-applications') || '[]').length;
-    setStats({ reservations, reviews, contacts, applications });
+    const load = async () => {
+      if (hasSupabase) {
+        const [r1, r2, r3, r4] = await Promise.all([
+          supabase.from('reservation').select('id', { count: 'exact', head: true }),
+          supabase.from('avis').select('id, published'),
+          supabase.from('contact').select('id', { count: 'exact', head: true }),
+          supabase.from('analytics_event').select('*').order('ts', { ascending: false }).limit(1000),
+        ]);
+        const reservations = r1.count || 0;
+        const reviews = (r2.data || []).filter(x => !x.published).length;
+        const contacts = r3.count || 0;
+        const visitors = computeUniqueVisitors(r4.data || []);
+        setStats({ reservations, reviews, contacts, visitors });
+        const pages = {};
+        (r4.data || []).forEach(e => { if (e.page) pages[e.page] = (pages[e.page] || 0) + 1; });
+        setTopPages(Object.entries(pages).map(([name, views]) => ({ name, views })).sort((a,b) => b.views - a.views).slice(0,5));
+      } else {
+        const reservations = JSON.parse(localStorage.getItem('creperie-reservations') || '[]').length;
+        const reviews = JSON.parse(localStorage.getItem('creperie-reviews') || '[]').filter(r => !r.approved).length;
+        const contacts = JSON.parse(localStorage.getItem('creperie-contacts') || '[]').length;
+        const analytics = JSON.parse(localStorage.getItem('creperie-analytics') || '[]');
+        const visitors = computeUniqueVisitors(analytics);
+        const pages = {};
+        analytics.forEach(e => { if (e.page) pages[e.page] = (pages[e.page] || 0) + 1; });
+        setStats({ reservations, reviews, contacts, visitors });
+        setTopPages(Object.entries(pages).map(([name, views]) => ({ name, views })));
+      }
+    };
+    load();
   }, []);
+
+  function computeUniqueVisitors(events) {
+    const list = (events || []).filter(e => e.event === 'page_view');
+    const keys = new Set();
+    for (const e of list) {
+      const fp = e.fp || '';
+      const ua = e.user_agent || '';
+      const anon = e.anon_id || '';
+      const ip = e.ip || '';
+      const key = fp || (anon ? `${anon}|${ua}` : (ip ? `${ip}|${ua}` : ua));
+      keys.add(key);
+    }
+    return keys.size;
+  }
 
   const reservationsData = [
     { name: 'Lun', reservations: 4 },
@@ -68,10 +103,10 @@ const AdminDashboard = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard icon={Calendar} title="Réservations à venir" value={stats.reservations} color="bg-blue-500" />
+          <StatCard icon={Calendar} title="Réservations" value={stats.reservations} color="bg-blue-500" />
           <StatCard icon={Star} title="Avis en attente" value={stats.reviews} color="bg-yellow-500" />
-          <StatCard icon={MessageSquare} title="Nouveaux messages" value={stats.contacts} color="bg-green-500" />
-          <StatCard icon={Briefcase} title="Nouvelles candidatures" value={stats.applications} color="bg-purple-500" />
+          <StatCard icon={MessageSquare} title="Messages" value={stats.contacts} color="bg-green-500" />
+          <StatCard icon={Users} title="Visiteurs uniques (échantillon)" value={stats.visitors} color="bg-purple-500" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -98,7 +133,7 @@ const AdminDashboard = () => {
           >
             <h2 className="text-xl font-bold text-anthracite mb-4">Vues des pages</h2>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={pageViewsData}>
+              <LineChart data={topPages.length ? topPages : pageViewsData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />

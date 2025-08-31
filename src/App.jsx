@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/contexts/LanguageContext';
@@ -12,7 +13,8 @@ import Contact from '@/pages/Contact';
 import Reservation from '@/pages/Reservation';
 import News from '@/pages/News';
 import GuestBook from '@/pages/GuestBook';
-import Recruitment from '@/pages/Recruitment';
+import Legal from '@/pages/Legal';
+import Privacy from '@/pages/Privacy';
 import AdminLayout from '@/components/admin/AdminLayout';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminReservations from '@/pages/admin/AdminReservations';
@@ -20,13 +22,16 @@ import AdminMenu from '@/pages/admin/AdminMenu';
 import AdminNews from '@/pages/admin/AdminNews';
 import AdminReviews from '@/pages/admin/AdminReviews';
 import AdminContacts from '@/pages/admin/AdminContacts';
-import AdminRecruitment from '@/pages/admin/AdminRecruitment';
 import AdminLogin from '@/pages/admin/AdminLogin';
+import AdminLogs from '@/pages/admin/AdminLogs';
+import CookieConsent from '@/components/CookieConsent';
+import { trackPageView } from '@/lib/metrics';
 
 function App() {
   return (
     <LanguageProvider>
       <Router>
+        <RouteChangeTracker />
         <Routes>
           {/* Public site */}
           <Route
@@ -49,7 +54,8 @@ function App() {
                     <Route path="/reservation" element={<Reservation />} />
                     <Route path="/actualites" element={<News />} />
                     <Route path="/livre-or" element={<GuestBook />} />
-                    <Route path="/recrutement" element={<Recruitment />} />
+                    <Route path="/mentions-legales" element={<Legal />} />
+                    <Route path="/politique-confidentialite" element={<Privacy />} />
                   </Routes>
                 </main>
                 <Footer />
@@ -70,7 +76,7 @@ function App() {
                   <Route path="/news" element={<AdminNews />} />
                   <Route path="/reviews" element={<AdminReviews />} />
                   <Route path="/contacts" element={<AdminContacts />} />
-                  <Route path="/recruitment" element={<AdminRecruitment />} />
+                  <Route path="/logs" element={<AdminLogs />} />
                   <Route path="*" element={<Navigate to="/admin" replace />} />
                 </Routes>
               </AdminLayout>
@@ -79,8 +85,17 @@ function App() {
         </Routes>
       </Router>
       <Toaster />
+      <CookieConsent />
     </LanguageProvider>
   );
+}
+
+function RouteChangeTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    trackPageView();
+  }, [location.pathname]);
+  return null;
 }
 
 export default App;

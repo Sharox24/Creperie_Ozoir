@@ -4,31 +4,53 @@ import { motion } from 'framer-motion';
 import { Trash2, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase, hasSupabase } from '@/lib/supabaseClient';
 
 const AdminContacts = () => {
   const [contacts, setContacts] = useState([]);
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedContacts = JSON.parse(localStorage.getItem('creperie-contacts') || '[]');
-    setContacts(savedContacts);
+    const load = async () => {
+      if (hasSupabase) {
+        const { data, error } = await supabase.from('contact').select('*').order('created_at', { ascending: false });
+        if (!error && data) setContacts(data);
+      } else {
+        const saved = JSON.parse(localStorage.getItem('creperie-contacts') || '[]');
+        setContacts(saved);
+      }
+    };
+    load();
   }, []);
 
-  const deleteContact = (id) => {
-    const updatedContacts = contacts.filter(c => c.id !== id);
-    setContacts(updatedContacts);
-    localStorage.setItem('creperie-contacts', JSON.stringify(updatedContacts));
-    toast({
-      title: "Message supprimé",
-      variant: "destructive",
-    });
+  const deleteContact = async (id) => {
+    if (hasSupabase) {
+      const { error } = await supabase.from('contact').delete().eq('id', id);
+      if (error) {
+        toast({ title: 'Erreur', description: error.message, variant: 'destructive' });
+        return;
+      }
+      setContacts(prev => prev.filter(c => c.id !== id));
+    } else {
+      const updated = contacts.filter(c => c.id !== id);
+      setContacts(updated);
+      localStorage.setItem('creperie-contacts', JSON.stringify(updated));
+    }
+    toast({ title: 'Message supprimé', variant: 'destructive' });
   };
 
-  const archiveContact = (id) => {
-    toast({
-      title: "🚧 Fonctionnalité non implémentée",
-      description: "L'archivage des messages sera bientôt disponible.",
-    });
+  const archiveContact = async (id) => {
+    if (hasSupabase) {
+      const { error } = await supabase.from('contact').update({ status: 'archive' }).eq('id', id);
+      if (error) {
+        toast({ title: 'Erreur', description: error.message, variant: 'destructive' });
+        return;
+      }
+      setContacts(prev => prev.map(c => (c.id === id ? { ...c, status: 'archive' } : c)));
+      toast({ title: 'Archivé' });
+    } else {
+      toast({ title: '🚧 Bientôt disponible' });
+    }
   };
 
   return (
@@ -47,7 +69,7 @@ const AdminContacts = () => {
                   <p className="font-semibold">{contact.name} <span className="text-sm text-gray-500 font-normal">&lt;{contact.email}&gt;</span></p>
                   <p className="text-sm font-bold text-anthracite mt-1">Sujet: {contact.subject}</p>
                   <p className="text-gray-600 text-sm mt-2">{contact.message}</p>
-                  <p className="text-xs text-gray-400 mt-2">Reçu le: {new Date(contact.date).toLocaleString('fr-FR')}</p>
+                  <p className="text-xs text-gray-400 mt-2">Reçu le: {new Date(contact.created_at || contact.date).toLocaleString('fr-FR')}</p>
                 </div>
                 <div className="flex space-x-2 flex-shrink-0 ml-4">
                   <Button size="icon" variant="ghost" className="text-gray-500" onClick={() => archiveContact(contact.id)}>
