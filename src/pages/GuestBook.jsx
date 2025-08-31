@@ -5,6 +5,7 @@ import { Star, MessageSquare, User, Calendar, Send } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase, hasSupabase } from '@/lib/supabaseClient';
 
 const GuestBook = () => {
   const { t } = useLanguage();
@@ -18,58 +19,16 @@ const GuestBook = () => {
   });
 
   useEffect(() => {
-    // Load reviews from localStorage
-    const savedReviews = JSON.parse(localStorage.getItem('creperie-reviews') || '[]');
-    
-    // Add some default reviews if none exist
-    if (savedReviews.length === 0) {
-      const defaultReviews = [
-        {
-          id: 1,
-          name: 'Marie Dubois',
-          rating: 5,
-          message: 'Excellente crêperie ! Les galettes sont authentiques et délicieuses. L\'accueil est chaleureux et l\'ambiance très conviviale. Je recommande vivement !',
-          date: '2024-10-10',
-          approved: true
-        },
-        {
-          id: 2,
-          name: 'Pierre Martin',
-          rating: 5,
-          message: 'Un vrai régal ! Les crêpes sucrées sont un délice et les produits sont de qualité. Le service est impeccable. Nous reviendrons c\'est sûr !',
-          date: '2024-10-08',
-          approved: true
-        },
-        {
-          id: 3,
-          name: 'Sophie Leroy',
-          rating: 4,
-          message: 'Très bonne expérience dans cette crêperie. Les galettes complètes sont savoureuses et l\'ambiance bretonne est au rendez-vous. Petit bémol sur l\'attente mais ça vaut le coup !',
-          date: '2024-10-05',
-          approved: true
-        },
-        {
-          id: 4,
-          name: 'Jean Dupont',
-          rating: 5,
-          message: 'Parfait pour un repas en famille ! Les enfants ont adoré les crêpes au Nutella et nous avons apprécié les galettes traditionnelles. Service attentionné.',
-          date: '2024-10-02',
-          approved: true
-        },
-        {
-          id: 5,
-          name: 'Isabelle Moreau',
-          rating: 5,
-          message: 'Une découverte fantastique ! Les produits sont frais, les recettes authentiques et l\'équipe est adorable. L\'ambiance nous transporte directement en Bretagne.',
-          date: '2024-09-28',
-          approved: true
-        }
-      ];
-      localStorage.setItem('creperie-reviews', JSON.stringify(defaultReviews));
-      setReviews(defaultReviews);
-    } else {
-      setReviews(savedReviews.filter(review => review.approved));
-    }
+    const load = async () => {
+      if (hasSupabase) {
+        const { data } = await supabase.from('avis').select('id, author, rating, message, date, published').eq('published', true).order('date', { ascending: false });
+        if (data) setReviews(data.map(r => ({ id: r.id, name: r.author, rating: r.rating, message: r.message, date: r.date })));
+      } else {
+        const saved = JSON.parse(localStorage.getItem('creperie-reviews') || '[]');
+        setReviews(saved.filter(r => r.approved).map(r => ({ id: r.id, name: r.name, rating: r.rating, message: r.message, date: r.date })));
+      }
+    };
+    load();
   }, []);
 
   const handleInputChange = (e) => {
@@ -80,33 +39,28 @@ const GuestBook = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Save to localStorage
-    const allReviews = JSON.parse(localStorage.getItem('creperie-reviews') || '[]');
-    const newReview = {
-      id: Date.now(),
-      ...formData,
-      date: new Date().toISOString().split('T')[0],
-      approved: false // Needs approval
-    };
-    allReviews.push(newReview);
-    localStorage.setItem('creperie-reviews', JSON.stringify(allReviews));
-
-    toast({
-      title: "Avis envoyé !",
-      description: "Merci pour votre avis ! Il sera publié après validation.",
-      duration: 5000,
-    });
-
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      rating: 5,
-      message: ''
-    });
+    try {
+      if (hasSupabase) {
+        const { error } = await supabase.from('avis').insert({
+          author: formData.name,
+          rating: Number(formData.rating),
+          message: formData.message,
+          date: new Date().toISOString().slice(0,10),
+          published: false,
+        });
+        if (error) throw error;
+      } else {
+        const all = JSON.parse(localStorage.getItem('creperie-reviews') || '[]');
+        all.push({ id: Date.now(), name: formData.name, rating: formData.rating, message: formData.message, date: new Date().toISOString().slice(0,10), approved: false });
+        localStorage.setItem('creperie-reviews', JSON.stringify(all));
+      }
+      toast({ title: 'Avis envoyé !', description: "Merci pour votre avis ! Il sera publié après validation." });
+      setFormData({ name: '', email: '', rating: 5, message: '' });
+    } catch (err) {
+      toast({ title: 'Erreur', description: err.message, variant: 'destructive' });
+    }
   };
 
   const formatDate = (dateString) => {

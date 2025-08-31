@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import { ChefHat, Clock, Star, Heart, Utensils } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase, hasSupabase } from '@/lib/supabaseClient';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Menu = () => {
   const [selectedCategory, setSelectedCategory] = useState('crepes');
+  const { language } = useLanguage();
   const [favorites, setFavorites] = useState([]);
   const [dynamicCategories, setDynamicCategories] = useState([]);
   const [dynamicItems, setDynamicItems] = useState([]);
@@ -16,13 +18,13 @@ const Menu = () => {
     const load = async () => {
       if (!hasSupabase) return;
       const { data: cats } = await supabase.from('categorie').select('id, name, slug');
-      const { data: items } = await supabase.from('menu').select('id, name, description, price, image, categorie_id');
+      const { data: items } = await supabase.from('menu').select('id, name, description, price, image, categorie_id, lang').or(`lang.eq.${language},lang.is.null`);
       if (cats) setDynamicCategories(cats);
       if (items) setDynamicItems(items);
       if (cats && cats.length) setSelectedCategory(cats[0].slug);
     };
     load();
-  }, []);
+  }, [language]);
 
   const categories = dynamicCategories.length
     ? dynamicCategories.map(c => ({ id: c.slug, name: c.name }))
@@ -146,9 +148,9 @@ const Menu = () => {
                         </div>
                       </div>
                     )}
-                    <motion.button className="w-full bg-gradient-to-r from-yellow-400 to-amber-400 text-gray-800 font-semibold py-3 rounded-xl hover:from-yellow-500 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-xl" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => toast({ title: 'Commande ajoutée !', description: 'Fonctionnalité à venir.' })}>
-                      Commander
-                    </motion.button>
+                    <div className="text-right">
+                      <span className="inline-block text-sm text-gray-500">Sélection en ligne indisponible</span>
+                    </div>
                   </div>
                 </motion.div>
               ))}

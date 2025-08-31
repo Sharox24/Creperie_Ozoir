@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { supabase, hasSupabase } from '@/lib/supabaseClient';
+import { track } from '@/lib/metrics';
 
 const ReservationConfirmation = ({ reservation, onBack }) => (
   <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.5 }} className="bg-white rounded-2xl p-8 shadow-2xl text-center">
@@ -75,12 +76,14 @@ const Reservation = () => {
         const { data, error } = await supabase.from('reservation').insert(payload).select().single();
         if (error) throw error;
         setReservationConfirmed(data);
+        try { track('reservation_submitted', { guests: payload.guests, time: payload.time }); } catch {}
       } else {
         const local = JSON.parse(localStorage.getItem('creperie-reservations') || '[]');
         const withId = { id: Date.now(), ...payload, createdAt: new Date().toISOString() };
         local.push(withId);
         localStorage.setItem('creperie-reservations', JSON.stringify(local));
         setReservationConfirmed(withId);
+        try { track('reservation_submitted', { guests: payload.guests, time: payload.time }); } catch {}
       }
 
       toast({ title: 'Demande de réservation envoyée !', description: 'Nous vous confirmerons votre réservation par email dans les plus brefs délais.', duration: 5000 });

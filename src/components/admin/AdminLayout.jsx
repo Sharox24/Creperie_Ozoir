@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Calendar, Utensils, Newspaper, Star, MessageSquare, Briefcase, LogOut } from 'lucide-react';
+import { LayoutDashboard, Calendar, Utensils, Newspaper, Star, MessageSquare, LogOut, FileText } from 'lucide-react';
+import { supabase, hasSupabase } from '@/lib/supabaseClient';
 
 const AdminLayout = ({ children }) => {
   const location = useLocation();
+  const [allowed, setAllowed] = useState(!hasSupabase);
+
+  useEffect(() => {
+    if (!hasSupabase) return;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) window.location.href = '/admin/login';
+      else setAllowed(true);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) window.location.href = '/admin/login';
+    });
+    return () => { sub?.subscription?.unsubscribe?.(); };
+  }, []);
 
   const navItems = [
     { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
@@ -12,11 +26,12 @@ const AdminLayout = ({ children }) => {
     { href: '/admin/news', icon: Newspaper, label: 'Actualités' },
     { href: '/admin/reviews', icon: Star, label: 'Avis' },
     { href: '/admin/contacts', icon: MessageSquare, label: 'Messages' },
-    { href: '/admin/recruitment', icon: Briefcase, label: 'Candidatures' },
+    { href: '/admin/logs', icon: FileText, label: 'Logs' },
   ];
 
   const isActive = (href) => location.pathname === href;
 
+  if (!allowed) return null;
   return (
     <div className="min-h-screen bg-gray-100 flex">
       <aside className="w-64 bg-anthracite text-white flex flex-col">

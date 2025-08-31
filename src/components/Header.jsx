@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Globe, Shield } from 'lucide-react';
+import { Menu, X, Shield } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,22 +19,19 @@ const Header = () => {
     { name: t('reservation'), href: '/reservation' },
     { name: t('news'), href: '/actualites' },
     { name: t('guestBook'), href: '/livre-or' },
-    { name: t('recruitment'), href: '/recrutement' },
   ];
 
   const isActive = (href) => location.pathname === href;
 
   return (
-    <header className="sticky top-0 z-50 glass-effect border-b border-yellow-200">
+    <header className="sticky top-0 z-50 bg-anthracite text-white shadow-lg">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-crepe-yellow rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-2xl font-pacifico text-anthracite">O</span>
-            </div>
+            <img src="/logo.png" onError={(e)=>{e.currentTarget.src='/logo.svg';}} alt="Crêperie Ozoir" className="h-10 w-auto" />
             <div className="hidden sm:block">
-              <h1 className="text-xl font-pacifico text-anthracite">Crêperie Ozoir</h1>
+              <h1 className="text-xl font-playfair text-white tracking-wide">Crêperie Ozoir</h1>
             </div>
           </Link>
 
@@ -45,8 +43,8 @@ const Header = () => {
                 to={item.href}
                 className={`relative px-3 py-2 text-sm font-medium transition-colors duration-200 ${
                   isActive(item.href)
-                    ? 'text-anthracite'
-                    : 'text-gray-600 hover:text-anthracite'
+                    ? 'text-[var(--crepe-yellow)]'
+                    : 'text-gray-200 hover:text-white'
                 }`}
               >
                 {item.name}
@@ -65,12 +63,13 @@ const Header = () => {
           {/* Language Switcher & Mobile Menu Button */}
           <div className="flex items-center space-x-4">
             <LanguageSwitcher />
-            <Link to="/admin" className="text-gray-600 hover:text-anthracite transition-colors">
+            <ThemeToggle />
+            <Link to="/admin" className="text-gray-200 hover:text-white transition-colors">
               <Shield size={20} />
             </Link>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 rounded-md text-gray-600 hover:text-anthracite hover:bg-yellow-50 transition-colors"
+              className="lg:hidden p-2 rounded-md text-gray-200 hover:text-white hover:bg-white/5 transition-colors"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -85,7 +84,7 @@ const Header = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden border-t border-yellow-200 bg-white/95 backdrop-blur-sm"
+              className="lg:hidden border-t border-white/10 bg-anthracite/95 backdrop-blur-sm"
             >
               <div className="px-2 pt-2 pb-3 space-y-1">
                 {navigation.map((item) => (
@@ -95,8 +94,8 @@ const Header = () => {
                     onClick={() => setIsMenuOpen(false)}
                     className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                       isActive(item.href)
-                        ? 'text-anthracite bg-yellow-50'
-                        : 'text-gray-600 hover:text-anthracite hover:bg-yellow-50'
+                        ? 'text-[var(--crepe-yellow)] bg-white/5'
+                        : 'text-gray-200 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     {item.name}

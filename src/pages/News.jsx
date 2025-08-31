@@ -7,7 +7,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase, hasSupabase } from '@/lib/supabaseClient';
 
 const News = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [remoteArticles, setRemoteArticles] = useState(null);
@@ -17,12 +17,13 @@ const News = () => {
       if (!hasSupabase) return;
       const { data } = await supabase.from('actualite').select('id, title, content, image, date, lang');
       if (data && data.length) {
-        const mapped = data.map(a => ({ id: a.id, title: a.title, excerpt: a.content?.slice(0, 160) || '', content: a.content || '', date: a.date, category: 'news', image: a.image || '', featured: false }));
+        const filtered = data.filter(a => a.lang === language || !a.lang);
+        const mapped = (filtered.length ? filtered : data).map(a => ({ id: a.id, title: a.title, excerpt: a.content?.slice(0, 160) || '', content: a.content || '', date: a.date, category: 'news', image: a.image || '', featured: false }));
         setRemoteArticles(mapped);
       }
     };
     load();
-  }, []);
+  }, [language]);
 
   const handleArticleClick = (article) => {
     toast({
