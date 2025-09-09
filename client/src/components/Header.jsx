@@ -30,7 +30,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img src="/logo.png" onError={(e)=>{e.currentTarget.src='/logo.svg';}} alt="Crêperie Ozoir" className="h-10 w-auto" />
-            <div className="hidden sm:block">
+            <div className="hidden">
               <h1 className="text-xl font-playfair text-white tracking-wide">Crêperie Ozoir</h1>
             </div>
           </Link>

@@ -26,6 +26,7 @@ const AdminLayout = ({ children }) => {
     { href: '/news', icon: Newspaper, label: 'Actualités' },
     { href: '/reviews', icon: Star, label: 'Avis' },
     { href: '/contacts', icon: MessageSquare, label: 'Messages' },
+    { href: '/business', icon: FileText, label: 'Établissement' },
     { href: '/logs', icon: FileText, label: 'Logs' },
   ];
 
@@ -63,4 +64,3 @@ const AdminLayout = ({ children }) => {
 };
 
 export default AdminLayout;
-

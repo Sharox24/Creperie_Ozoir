@@ -11,6 +11,7 @@ import AdminReviews from '@/pages/AdminReviews';
 import AdminContacts from '@/pages/AdminContacts';
 import AdminLogin from '@/pages/AdminLogin';
 import AdminLogs from '@/pages/AdminLogs';
+import AdminBusiness from '@/pages/AdminBusiness';
 
 export default function AdminApp() {
   return (
@@ -30,6 +31,7 @@ export default function AdminApp() {
                   <Route path="/news" element={<AdminNews />} />
                   <Route path="/reviews" element={<AdminReviews />} />
                   <Route path="/contacts" element={<AdminContacts />} />
+                  <Route path="/business" element={<AdminBusiness />} />
                   <Route path="/logs" element={<AdminLogs />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
@@ -42,4 +44,3 @@ export default function AdminApp() {
     </LanguageProvider>
   );
 }
-

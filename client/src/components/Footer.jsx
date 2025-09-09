@@ -13,6 +13,11 @@ const Footer = () => {
       if (hasSupabase) {
         const { data } = await supabase.from('opening_hours').select('*');
         if (data && data.length) setHours(data);
+      } else {
+        try {
+          const local = JSON.parse(localStorage.getItem('creperie-opening-hours') || 'null');
+          if (local && Array.isArray(local) && local.length) setHours(local);
+        } catch {}
       }
     };
     load();
@@ -81,7 +86,8 @@ const Footer = () => {
             </div>
             <div className="space-y-2">
               {(hours && hours.length ? hours.map(h => ({
-                day: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][h.weekday] || '',
+                // If imported, weekday may be Monday=0..Sunday=6; adjust labels
+                day: ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'][h.weekday] || '',
                 hours: h.ranges || t('closed')
               })) : defaultHours).map((schedule, index) => (
                 <div key={index} className="flex justify-between text-sm">
