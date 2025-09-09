@@ -1,6 +1,10 @@
 import { supabase, hasSupabase } from './supabaseClient';
 import { getVisitorSignature } from './deviceSignature';
 
+// Disable any external tracking in dev to avoid pending requests/spinners
+const IS_DEV = typeof importMeta !== 'undefined' ? importMeta.env?.DEV : import.meta?.env?.DEV;
+const METRICS_ENABLED = typeof window !== 'undefined' && !IS_DEV;
+
 const CONSENT_KEY = 'creperie-cookie-consent';
 const ANON_ID_KEY = 'creperie-anon-id';
 const IP_CACHE_KEY = 'creperie-ip-cache';
@@ -24,7 +28,7 @@ function getAnonId() {
 }
 
 export async function track(event, payload = {}) {
-  if (!getConsent()) return;
+  if (!getConsent() || !METRICS_ENABLED) return;
   const anon = getAnonId();
   const page = typeof window !== 'undefined' ? window.location.pathname : '';
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
