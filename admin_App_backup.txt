@@ -17,7 +17,27 @@ export default function AdminApp() {
     <LanguageProvider>
       <Router>
         <Routes>
-          {/* Admin servi à la racine (http://localhost:5174) */}
+          {/* Conserve les routes /admin existantes pour compatibilité */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route
+            path="/admin/*"
+            element={
+              <AdminLayout>
+                <Routes>
+                  <Route path="/" element={<AdminDashboard />} />
+                  <Route path="/reservations" element={<AdminReservations />} />
+                  <Route path="/menu" element={<AdminMenu />} />
+                  <Route path="/news" element={<AdminNews />} />
+                  <Route path="/reviews" element={<AdminReviews />} />
+                  <Route path="/contacts" element={<AdminContacts />} />
+                  <Route path="/logs" element={<AdminLogs />} />
+                  <Route path="*" element={<Navigate to="/admin" replace />} />
+                </Routes>
+              </AdminLayout>
+            }
+          />
+          {/* Optionnel: si vous servez l'admin à la racine, décommentez et ajustez */}
+          {/**
           <Route path="/login" element={<AdminLogin />} />
           <Route
             path="/*"
@@ -36,10 +56,10 @@ export default function AdminApp() {
               </AdminLayout>
             }
           />
+          */}
         </Routes>
       </Router>
       <Toaster />
     </LanguageProvider>
   );
 }
-

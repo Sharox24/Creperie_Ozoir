@@ -44,11 +44,11 @@ npm install
 ```
 
 ## Lancement
-- Tout lancer en une commande (ouvre 2 onglets):
+- Tout lancer en une commande:
 ```bash
 npm run dev:all
-# Client → http://localhost:5173/
-# Admin  → http://localhost:5174/
+# Client: http://localhost:5173/
+# Admin : http://localhost:5174/
 ```
 - Ou séparément:
 ```bash
@@ -151,4 +151,3 @@ npm run build   # génère dist/client et dist/admin
 
 ### Raccourcis
 [Accueil](#crêperie-ozoir--client--admin) | [Lancement](#lancement) | [Scripts](#scripts-disponibles) | [Déploiement](#build--déploiement)
-

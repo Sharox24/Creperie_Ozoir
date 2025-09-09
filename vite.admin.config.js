@@ -5,6 +5,7 @@ import baseConfig from './vite.config.js';
 export default defineConfig({
   ...baseConfig,
   root: path.resolve(__dirname, 'admin'),
+  publicDir: path.resolve(__dirname, 'public'),
   resolve: {
     ...(baseConfig.resolve ?? {}),
     alias: {
@@ -24,7 +25,6 @@ export default defineConfig({
   server: {
     ...(baseConfig.server ?? {}),
     port: 5174,
-    open: '/',
   },
   preview: {
     port: 5174,

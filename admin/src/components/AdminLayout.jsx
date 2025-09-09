@@ -10,23 +10,23 @@ const AdminLayout = ({ children }) => {
   useEffect(() => {
     if (!hasSupabase) return;
     supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) window.location.href = '/admin/login';
+      if (!data.session) window.location.href = '/login';
       else setAllowed(true);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) window.location.href = '/admin/login';
+      if (!session) window.location.href = '/login';
     });
     return () => { sub?.subscription?.unsubscribe?.(); };
   }, []);
 
   const navItems = [
-    { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
-    { href: '/admin/reservations', icon: Calendar, label: 'Réservations' },
-    { href: '/admin/menu', icon: Utensils, label: 'Menu' },
-    { href: '/admin/news', icon: Newspaper, label: 'Actualités' },
-    { href: '/admin/reviews', icon: Star, label: 'Avis' },
-    { href: '/admin/contacts', icon: MessageSquare, label: 'Messages' },
-    { href: '/admin/logs', icon: FileText, label: 'Logs' },
+    { href: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { href: '/reservations', icon: Calendar, label: 'Réservations' },
+    { href: '/menu', icon: Utensils, label: 'Menu' },
+    { href: '/news', icon: Newspaper, label: 'Actualités' },
+    { href: '/reviews', icon: Star, label: 'Avis' },
+    { href: '/contacts', icon: MessageSquare, label: 'Messages' },
+    { href: '/logs', icon: FileText, label: 'Logs' },
   ];
 
   const isActive = (href) => location.pathname === href;
@@ -36,7 +36,7 @@ const AdminLayout = ({ children }) => {
     <div className="min-h-screen bg-gray-100 flex">
       <aside className="w-64 bg-anthracite text-white flex flex-col">
         <div className="h-16 flex items-center justify-center text-2xl font-pacifico border-b border-gray-700">
-          <Link to="/admin">Crêperie Admin</Link>
+          <Link to="/">Crêperie Admin</Link>
         </div>
         <nav className="flex-1 px-4 py-6 space-y-2">
           {navItems.map(item => (
@@ -54,7 +54,6 @@ const AdminLayout = ({ children }) => {
             </Link>
           ))}
         </nav>
-        {/* Lien vers le site public retiré pour séparation stricte */}
       </aside>
       <main className="flex-1 p-8 overflow-y-auto">
         {children}
@@ -64,3 +63,4 @@ const AdminLayout = ({ children }) => {
 };
 
 export default AdminLayout;
+

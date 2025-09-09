@@ -54,7 +54,10 @@ const translations = {
     followUs: 'Suivez-nous',
     legalNotices: 'Mentions légales',
     privacyPolicy: 'Politique de confidentialité',
-    featureNotImplemented: 'Fonctionnalité à venir.'
+    featureNotImplemented: 'Fonctionnalité à venir.',
+    themeLight: 'Clair',
+    themeDark: 'Sombre',
+    toggleTheme: 'Basculer le thème'
   },
   en: {
     home: 'Home',
@@ -107,7 +110,10 @@ const translations = {
     followUs: 'Follow us',
     legalNotices: 'Legal notices',
     privacyPolicy: 'Privacy policy',
-    featureNotImplemented: 'Coming soon.'
+    featureNotImplemented: 'Coming soon.',
+    themeLight: 'Light',
+    themeDark: 'Dark',
+    toggleTheme: 'Toggle theme'
   }
 };
 
@@ -140,4 +146,3 @@ export const useLanguage = () => {
   if (!context) throw new Error('useLanguage must be used within a LanguageProvider');
   return context;
 };
-
