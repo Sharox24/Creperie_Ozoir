@@ -121,3 +121,8 @@ input::placeholder, textarea::placeholder { color: #9ca3af; }
   transform: translateY(-5px);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
+
+/* Hide duplicate brand text next to the logo in footer */
+footer .flex.items-center.space-x-2 > span.text-xl.font-playfair.tracking-wide {
+  display: none;
+}
