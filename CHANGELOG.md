@@ -29,3 +29,4 @@
 - 2025-08-18 : Merge hotfix branch
 - 2025-09-04 : Clean up directory structure
 - 2025-11-20 : Update typescript configuration
+- 2025-11-24 : Clean up old comments
