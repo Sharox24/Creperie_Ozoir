@@ -35,3 +35,4 @@
 - 2025-12-30 : Clean up old comments
 - 2026-01-31 : Update deployment scripts
 - 2026-02-04 : Fix hydration issue on client side
+- 2026-02-12 : Update Creperie_Ozoir documentation
