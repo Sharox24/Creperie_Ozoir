@@ -37,3 +37,4 @@
 - 2026-02-04 : Fix hydration issue on client side
 - 2026-02-12 : Update Creperie_Ozoir documentation
 - 2026-03-06 : Update typescript configuration
+- 2026-05-16 : Update deployment scripts
